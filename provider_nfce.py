@@ -10,9 +10,12 @@ URL = "https://public.tableau.com/views/EstatsticasNFCe/NFCe.csv"
 ROOT = Path(__file__).resolve().parent / "docs/api/nfce"
 
 def parse_csv(raw):
-    reader = csv.DictReader(io.StringIO(raw.decode("utf-8-sig")))
-    fields = {x.strip(): x for x in reader.fieldnames or []}
-    metric = "Soma de Emissores  (CNPJ)"
+    decoded = raw.decode("utf-8-sig")
+    first = decoded.splitlines()[0] if decoded.splitlines() else ""
+    delimiter = ";" if first.count(";") > first.count(",") else ","
+    reader = csv.DictReader(io.StringIO(decoded), delimiter=delimiter)
+    fields = {" ".join(x.split()): x for x in reader.fieldnames or []}
+    metric = "Soma de Emissores (CNPJ)"
     if not {"Mês", metric}.issubset(fields):
         raise ValueError("Unexpected provider schema")
     rows = {}
@@ -44,13 +47,15 @@ def main():
     rows = None
     with requests.Session() as session:
         session.headers.update(headers)
-        for query in ("?:showVizHome=no", "?:refresh=yes", "?:showVizHome=n", ""):
+        for query in ("?:showVizHome=no&:format=csv", "?:showVizHome=no&:display_count=n&:origin=viz_share_link", "?:showVizHome=no", "?:showVizHome=n", "?:refresh=yes", ""):
             try:
                 with session.get(URL + query, timeout=(10, 25), stream=True, allow_redirects=True) as response:
                     response.raise_for_status()
                     raw = response.raw.read(10_000_001, decode_content=True)
                 if len(raw) > 10_000_000:
                     raise ValueError("Provider size limit")
+                print("Provider metadata:", response.status_code, response.headers.get("Content-Type"), len(raw), flush=True)
+                print("Provider header:", repr(raw.splitlines()[0][:300]) if raw else "empty", flush=True)
                 rows = parse_csv(raw)
                 print("Provider response validated:", query or "base", flush=True)
                 break
