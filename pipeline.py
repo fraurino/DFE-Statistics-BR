@@ -2,7 +2,7 @@ import json
 import subprocess
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -17,7 +17,18 @@ def run():
         key = model["id"]
         folder = API if key == "nfe" else API / key
         folder.mkdir(parents=True, exist_ok=True)
+        previous = {}
+        try:
+            previous = json.loads((folder / 'status.json').read_text(encoding='utf-8'))
+        except (OSError, ValueError):
+            pass
         started = datetime.now(timezone.utc)
+        last = previous.get('ultima_consulta_sucesso') or (previous.get('consulta') if previous.get('status') == 'success' else None)
+        if last and '--force' not in sys.argv:
+            due = datetime.fromisoformat(last).astimezone(timezone.utc).date() + timedelta(days=11)
+            if started.date() < due:
+                print(f'{key}: deferred', flush=True)
+                continue
         clock = time.monotonic()
         status = "failure"
         try:
@@ -32,6 +43,7 @@ def run():
         except (OSError, ValueError):
             pass
         payload = dict(status=status, consulta=ended.isoformat(), inicio=started.isoformat(),
+                       proxima_consulta=(ended.date()+timedelta(days=11 if status=='success' else 1)).isoformat()+'T12:17:00+00:00',
                        duracao_segundos=round(time.monotonic()-clock, 2),
                        ultima_consulta_sucesso=ended.isoformat() if status=="success" else previous.get("ultima_consulta_sucesso") or (previous.get("consulta") if previous.get("status")=="success" else None))
         tmp = folder / "status.tmp"
