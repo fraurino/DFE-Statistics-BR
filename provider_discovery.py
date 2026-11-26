@@ -44,3 +44,23 @@ with requests.Session() as session:
                     for v in obj: walk(v)
             walk(data)
     except Exception as exc: print(type(exc).__name__,str(exc))
+
+from urllib.parse import quote
+from concurrent.futures import ThreadPoolExecutor
+import re
+names = [
+'Evolução NFCe autorizadas','NFCe autorizadas por ano',
+'Acumulado NFC-e Autorizadas','Mapa do acumulado de NFC-e autorizadas']
+def probe(name):
+    candidates = list(dict.fromkeys([name, re.sub(r'[^a-zA-Z0-9]', '', name), name.replace(' ', ''), name.replace(' ', '_')]))
+    for candidate in candidates:
+        url = BASE+'/views/EstatsticasNFCe/'+quote(candidate,safe='')+'.csv?:showVizHome=no'
+        try:
+            res=requests.get(url,headers=headers,timeout=(8,15))
+            print('Export:',repr(name),res.status_code,res.headers.get('Content-Type'),len(res.content),url,flush=True)
+            if res.ok and 'csv' in res.headers.get('Content-Type','').lower():
+                print('CSV sample:',repr(res.text[:500]),flush=True)
+        except requests.RequestException as exc:
+            print('Export failure:',type(exc).__name__,flush=True)
+with ThreadPoolExecutor(max_workers=4) as pool:
+    list(pool.map(probe,names))
