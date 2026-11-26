@@ -87,6 +87,8 @@ def main():
     save("history.json", json.dumps(dict(nfe={}, emissores=rows, **meta), ensure_ascii=False, indent=2).encode())
     save("latest.json", json.dumps(dict(documento=None, emissores=rows[max(rows)], **meta), ensure_ascii=False, indent=2).encode())
     print("Provider observations:", len(rows))
+    from provider_authorized import collect
+    collect()
 
 if __name__ == "__main__":
     main()

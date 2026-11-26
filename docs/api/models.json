@@ -19,11 +19,12 @@
     "id": "nfce",
     "nome": "NFC-e",
     "modelo": "65",
-    "descricao": "Varejo · série mensal de emissores",
+    "descricao": "Varejo · autorizações e emissores",
     "fonte": "https://public.tableau.com/views/EstatsticasNFCe/NFCe.csv",
     "ativo": true,
     "metrica": "emissores",
-    "abrangencia": "não confirmada"
+    "abrangencia": "não confirmada",
+    "uf": true
   },
   {
     "id": "nfse",
