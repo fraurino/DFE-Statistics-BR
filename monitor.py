@@ -48,7 +48,10 @@ def parse(html, model="nfe"):
     return result
 
 def save(name, obj):
-    (ROOT / name).write_text(json.dumps(obj, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+    target = ROOT / name
+    temp = target.with_suffix(target.suffix + ".tmp")
+    temp.write_text(json.dumps(obj, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+    temp.replace(target)
 
 def aggregate(rows, kind):
     groups = {}
