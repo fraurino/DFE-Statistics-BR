@@ -19,9 +19,11 @@
     "id": "nfce",
     "nome": "NFC-e",
     "modelo": "65",
-    "descricao": "Varejo",
-    "fonte": null,
-    "ativo": false
+    "descricao": "Varejo · série mensal de emissores",
+    "fonte": "https://public.tableau.com/views/EstatsticasNFCe/NFCe.csv",
+    "ativo": true,
+    "metrica": "emissores",
+    "abrangencia": "não confirmada"
   },
   {
     "id": "nfse",

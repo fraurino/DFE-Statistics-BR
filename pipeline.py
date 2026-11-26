@@ -32,7 +32,7 @@ def run():
         clock = time.monotonic()
         status = "failure"
         try:
-            result = subprocess.run([sys.executable, str(ROOT / "monitor.py"), key], cwd=ROOT, timeout=180)
+            result = subprocess.run([sys.executable, str(ROOT / ("provider_nfce.py" if key == "nfce" else "monitor.py")), key], cwd=ROOT, timeout=180)
             status = "success" if result.returncode == 0 else "failure"
         except (OSError, subprocess.TimeoutExpired) as exc:
             print(f"{key}: {type(exc).__name__}", flush=True)

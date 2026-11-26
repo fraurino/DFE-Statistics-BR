@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['monitor.py','pipeline.py','tests/**','.github/workflows/monitor.yml','docs/index.html','docs/api/models.json']
+    paths: ['monitor.py','pipeline.py','provider_nfce.py','tests/**','.github/workflows/monitor.yml','docs/index.html','docs/api/models.json']
 concurrency:
   group: dfe-publication
   cancel-in-progress: false
