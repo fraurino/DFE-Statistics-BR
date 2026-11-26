@@ -42,10 +42,17 @@ def collect():
         if uf not in UFS or uf in states: raise ValueError("Invalid UF")
         states[uf]=number(row["Notas Autorizadas"])
     monthly=defaultdict(dict)
+    missing=[]
     for row in tables["monthly"]:
         uf=row["UF"]; d=period(row)
         if uf not in UFS or d in monthly[uf]: raise ValueError("Invalid monthly UF")
-        monthly[uf][d]=number(row["Notas Autorizadas"])
+        value=row["Notas Autorizadas"]
+        if value is None or value.strip().lower() in ("", "null", "none", "n/a", "-", "—"):
+            missing.append(dict(uf=uf,data=d))
+            monthly[uf][d]=None
+        else:
+            try: monthly[uf][d]=number(value)
+            except ValueError as exc: raise ValueError(f"Invalid monthly count {uf} {d}: {value!r}") from exc
     if set(states)!=UFS or set(monthly)!=UFS: raise ValueError("Incomplete UF coverage")
     last=max(national)
     previous=ROOT/"authorized.json"
@@ -54,13 +61,15 @@ def collect():
     for uf,rows in monthly.items():
         total=0; hist={}
         for d,v in sorted(rows.items()):
+            if v is None: continue
             total+=v; hist[d]=obs(d,total)
-        regions[uf]=dict(history=hist,monthly=rows,total=states[uf],consistent=total==states[uf])
+        regions[uf]=dict(history=hist,monthly=rows,total=states[uf],consistent=total==states[uf],missing=sum(v is None for v in rows.values()))
     annual=defaultdict(int)
     for rows in monthly.values():
-        for d,v in rows.items(): annual[d[:4]]+=v
-    payload=dict(latest=national[last],history=national,states=states,regions=regions,annual=annual,periodicidade="mensal",state_sum=sum(states.values()),consistent=sum(states.values())==national[last]["valor"],sources={k:BASE+v+".csv?:showVizHome=no" for k,v in SHEETS.items()})
+        for d,v in rows.items():
+            if v is not None: annual[d[:4]]+=v
+    payload=dict(latest=national[last],history=national,states=states,regions=regions,annual=annual,missing=missing,annual_partial=sorted({x["data"][:4] for x in missing}),periodicidade="mensal",state_sum=sum(states.values()),consistent=sum(states.values())==national[last]["valor"],sources={k:BASE+v+".csv?:showVizHome=no" for k,v in SHEETS.items()})
     for key,data in raw.items(): save(key+".csv",data)
     save("authorized.json",json.dumps(payload,ensure_ascii=False,indent=2).encode())
-    print("Authorization observations:",len(national),"UF:",len(states),flush=True)
+    print("Authorization observations:",len(national),"UF:",len(states),"missing:",len(missing),"consistent:",payload["consistent"],flush=True)
 if __name__=="__main__": collect()

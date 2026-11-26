@@ -26,7 +26,7 @@ def run():
         last = previous.get('ultima_consulta_sucesso') or (previous.get('consulta') if previous.get('status') == 'success' else None)
         if last and '--force' not in sys.argv:
             due = datetime.fromisoformat(last).astimezone(timezone.utc).date() + timedelta(days=11)
-            if started.date() < due and not (key == 'nfce' and not (folder / 'authorized.json').exists()):
+            if started.date() < due and previous.get('status') == 'success' and not (key == 'nfce' and not (folder / 'authorized.json').exists()):
                 print(f'{key}: deferred', flush=True)
                 continue
         clock = time.monotonic()
