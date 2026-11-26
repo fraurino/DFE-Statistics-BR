@@ -1,0 +1,21 @@
+{
+  "documento": {
+    "data": "2026-11-26",
+    "valor": 28002000000,
+    "publicado": "28,002 bilhões",
+    "variacao": null
+  },
+  "nfe": {
+    "data": "2026-11-26",
+    "valor": 28002000000,
+    "publicado": "28,002 bilhões",
+    "variacao": null
+  },
+  "emissores": {
+    "data": "2026-11-20",
+    "valor": 123311,
+    "publicado": "123,311 mil"
+  },
+  "fonte": "https://www.cte.fazenda.gov.br/portal/infoEstatisticas.aspx",
+  "aproximado": true
+}
