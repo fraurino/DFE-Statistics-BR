@@ -34,7 +34,7 @@ O [dashboard público](https://fraurino.github.io/DFE-Statistics-BR/) apresenta 
 
 ## Fonte e periodicidade
 
-A fonte inicial é o [Portal Nacional da Nota Fiscal Eletrônica — Estatísticas](https://www.nfe.fazenda.gov.br/portal/infoEstatisticas.aspx).
+A fonte de CT-e é o [Portal Nacional CT-e](https://www.cte.fazenda.gov.br/portal/infoEstatisticas.aspx). A fonte inicial de NF-e é o [Portal Nacional da Nota Fiscal Eletrônica — Estatísticas](https://www.nfe.fazenda.gov.br/portal/infoEstatisticas.aspx).
 
 As consultas são programadas a cada 30 minutos. Isso não significa que a fonte disponibilize novos números a cada consulta: o acumulado de NF-e é apurado diariamente e o indicador de emissores a cada dez dias, conforme a metodologia divulgada pelo portal.
 
@@ -78,7 +78,7 @@ Desenvolvedores de sistemas fiscais e ERP, profissionais de contabilidade, pesqu
 
 ## Abrangência e evolução
 
-O escopo atual é a NF-e (modelo 55) em âmbito nacional. A inclusão de NFC-e, CT-e, MDF-e e outros documentos fiscais eletrônicos é uma possibilidade de evolução, condicionada à disponibilidade e validação de fontes públicas confiáveis.
+O escopo inclui NF-e (55) e CT-e (57), com fontes nacionais independentes. O painel também apresenta NFC-e, NFS-e, MDF-e, BP-e, NF3e, NFCom, CT-e OS, GTV-e, NFAg, NFGas e DC-e como aguardando fonte pública validada. O CT-e possui dados próprios em `api/cte/`, com os mesmos recursos JSON e CSV da NF-e.
 
 ## Transparência e independência
 

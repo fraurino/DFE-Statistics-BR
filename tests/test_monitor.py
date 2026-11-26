@@ -11,3 +11,10 @@ class TestMonitor(unittest.TestCase):
         self.assertEqual(parse(html)["emissores"]["data"],"2026-11-22")
     def test_missing(self):
         self.assertIsNone(aggregate([{"data":"2026-11-26","variacao":None}],"daily")[0]["variacao"])
+
+    def test_cte(self):
+        self.assertEqual(number("123,311 mil"),123311)
+        self.assertEqual(number("123.311"),123311)
+        p="ctl00_ContentPlaceHolder1_lbl"
+        v={"ValorCTeAutorizado":"27,846 bilhões","DataCTeAutorizado":"21/11/2026","ValorEmissores":"123,311 mil","DataEmissores":"20/11/2026"}
+        self.assertEqual(parse("".join(f'<span id="{p}{k}">{x}</span>' for k,x in v.items()),"cte")["nfe"]["valor"],27846000000)

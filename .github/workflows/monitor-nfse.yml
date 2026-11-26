@@ -1,0 +1,11 @@
+name: Monitor NFS-e
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pending:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python monitor.py nfse

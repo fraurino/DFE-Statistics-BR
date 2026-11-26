@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['monitor.py','tests/**','.github/workflows/monitor.yml','docs/index.html']
+    paths: ['monitor.py','tests/**','.github/workflows/monitor.yml','docs/index.html','docs/api/models.json']
 concurrency:
-  group: monitor-nfe
+  group: dfe-publication
   cancel-in-progress: false
 permissions:
   contents: write
@@ -28,11 +28,12 @@ jobs:
       - name: Coleta oficial
         id: coleta
         continue-on-error: true
-        run: python monitor.py
+        run: python monitor.py nfe
       - name: Registra situação da coleta
         env:
           RESULT: ${{ steps.coleta.outcome }}
         run: |
+          mkdir -p docs/api/
           python -c 'import json, os, datetime; from pathlib import Path; Path("docs/api/status.json").write_text(json.dumps(dict(status=os.environ["RESULT"], consulta=datetime.datetime.now(datetime.timezone.utc).isoformat())))'
       - run: |
           git config user.name 'github-actions[bot]'

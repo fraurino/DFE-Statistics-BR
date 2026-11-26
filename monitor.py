@@ -1,4 +1,4 @@
-import csv, json, re, time
+import csv, json, re, time, sys
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from html.parser import HTMLParser
@@ -28,19 +28,22 @@ class Parser(HTMLParser):
             self.key = None
 
 def number(s):
-    m = re.fullmatch(r"([\d.,]+)\s+(bilhões|milhões|bilhão|milhão)", s.strip())
+    m = re.fullmatch(r"([\d.,]+)(?:\s+(bilhões|milhões|bilhão|milhão|mil))?", s.strip())
     if not m:
         raise ValueError("Formato desconhecido: " + s)
     n = Decimal(m[1].replace(".", "").replace(",", "."))
-    return int(n * (10**9 if m[2].startswith("bi") else 10**6))
+    return int(n * (10**9 if (m[2] or "").startswith("bi") else 10**6 if (m[2] or "").startswith("mi") and m[2] != "mil" else 1000 if m[2] == "mil" else 1))
 
-def parse(html):
+def parse(html, model="nfe"):
     p = Parser()
     p.feed(html)
     result = {}
-    for key, suffix in [("nfe", "NFeAutorizada"), ("emissores", "Emissores")]:
-        raw = p.values["Valor" + suffix].strip()
-        day = datetime.strptime(p.values["Data" + suffix].strip(), "%d/%m/%Y").date()
+    for key, suffix in [("nfe", "NFeAutorizada" if model == "nfe" else "CTeAutorizado"), ("emissores", "Emissores")]:
+        candidates = [suffix] if model == "nfe" or key == "emissores" else [suffix, "CTeAutorizados", "CTeAutorizada", "CTeAutorizadas"]
+        match = next((s for s in candidates if "Valor"+s in p.values and "Data"+s in p.values), None)
+        if match is None: raise ValueError("Campos oficiais ausentes: "+str(list(p.values)))
+        raw = p.values["Valor" + match].strip()
+        day = datetime.strptime(p.values["Data" + match].strip(), "%d/%m/%Y").date()
         result[key] = dict(data=day.isoformat(), valor=number(raw), publicado=raw)
     return result
 
@@ -65,7 +68,7 @@ def publish(history):
         rows.append(dict(row, variacao=delta))
         previous = row
     save("history.json", history)
-    latest = dict(nfe=rows[-1], emissores=max(history["emissores"].values(), key=lambda x:x["data"]), fonte=URL, aproximado=True)
+    latest = dict(documento=rows[-1], nfe=rows[-1], emissores=max(history["emissores"].values(), key=lambda x:x["data"]), fonte=URL, aproximado=True)
     save("latest.json", latest)
     for kind in ("daily","weekly","monthly","yearly"):
         save(kind+".json", aggregate(rows,kind))
@@ -75,12 +78,20 @@ def publish(history):
         w.writerows(rows)
 
 def main():
+    global ROOT, URL
+    model = sys.argv[1] if len(sys.argv)>1 else "nfe"
+    config = next(x for x in json.loads((ROOT/"models.json").read_text(encoding="utf-8")) if x["id"]==model)
+    if not config["ativo"]:
+        print("Aguardando fonte pública validada:", model)
+        return
+    URL = config["fonte"]
+    if model != "nfe": ROOT = ROOT/model
     ROOT.mkdir(parents=True, exist_ok=True)
     opener = build_opener(HTTPCookieProcessor(CookieJar()))
     for attempt in range(3):
         try:
             with opener.open(Request(URL, headers={"User-Agent":"DFE-Statistics-BR/1.0 (+https://github.com/fraurino/DFE-Statistics-BR)"}), timeout=40) as response:
-                result=parse(response.read().decode(response.headers.get_content_charset() or "utf-8"))
+                result=parse(response.read().decode(response.headers.get_content_charset() or "utf-8"), model)
             break
         except Exception:
             if attempt == 2: raise

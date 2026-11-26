@@ -1,0 +1,106 @@
+[
+  {
+    "id": "nfe",
+    "nome": "NF-e",
+    "modelo": "55",
+    "descricao": "Mercadorias",
+    "fonte": "https://www.nfe.fazenda.gov.br/portal/infoEstatisticas.aspx",
+    "ativo": true
+  },
+  {
+    "id": "cte",
+    "nome": "CT-e",
+    "modelo": "57",
+    "descricao": "Transporte de cargas",
+    "fonte": "https://www.cte.fazenda.gov.br/portal/infoEstatisticas.aspx",
+    "ativo": true
+  },
+  {
+    "id": "nfce",
+    "nome": "NFC-e",
+    "modelo": "65",
+    "descricao": "Varejo",
+    "fonte": null,
+    "ativo": false
+  },
+  {
+    "id": "nfse",
+    "nome": "NFS-e",
+    "modelo": null,
+    "descricao": "Serviços",
+    "fonte": null,
+    "ativo": false
+  },
+  {
+    "id": "mdfe",
+    "nome": "MDF-e",
+    "modelo": "58",
+    "descricao": "Manifesto",
+    "fonte": null,
+    "ativo": false
+  },
+  {
+    "id": "bpe",
+    "nome": "BP-e",
+    "modelo": "63",
+    "descricao": "Passagens",
+    "fonte": null,
+    "ativo": false
+  },
+  {
+    "id": "nf3e",
+    "nome": "NF3e",
+    "modelo": "66",
+    "descricao": "Energia elétrica",
+    "fonte": null,
+    "ativo": false
+  },
+  {
+    "id": "nfcom",
+    "nome": "NFCom",
+    "modelo": "62",
+    "descricao": "Comunicações",
+    "fonte": null,
+    "ativo": false
+  },
+  {
+    "id": "cteos",
+    "nome": "CT-e OS",
+    "modelo": "67",
+    "descricao": "Outros transportes",
+    "fonte": null,
+    "ativo": false
+  },
+  {
+    "id": "gtve",
+    "nome": "GTV-e",
+    "modelo": "64",
+    "descricao": "Transporte de valores",
+    "fonte": null,
+    "ativo": false
+  },
+  {
+    "id": "nfag",
+    "nome": "NFAg",
+    "modelo": "75",
+    "descricao": "Água e saneamento",
+    "fonte": null,
+    "ativo": false
+  },
+  {
+    "id": "nfgas",
+    "nome": "NFGas",
+    "modelo": "76",
+    "descricao": "Gás",
+    "fonte": null,
+    "ativo": false
+  },
+  {
+    "id": "dce",
+    "nome": "DC-e",
+    "modelo": "99",
+    "descricao": "Declaração de conteúdo",
+    "fonte": null,
+    "ativo": false
+  }
+]
