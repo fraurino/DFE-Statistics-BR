@@ -25,7 +25,15 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m unittest discover -s tests
-      - run: python monitor.py
+      - name: Coleta oficial
+        id: coleta
+        continue-on-error: true
+        run: python monitor.py
+      - name: Registra situação da coleta
+        env:
+          RESULT: ${{ steps.coleta.outcome }}
+        run: |
+          python -c 'import json, os, datetime; from pathlib import Path; Path("docs/api/status.json").write_text(json.dumps(dict(status=os.environ["RESULT"], consulta=datetime.datetime.now(datetime.timezone.utc).isoformat())))'
       - run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -34,6 +42,7 @@ jobs:
             git commit -m 'Atualiza estatísticas NF-e'
             git push origin main
           fi
+      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs

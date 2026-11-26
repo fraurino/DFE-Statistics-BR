@@ -3,7 +3,8 @@ from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.request import urlopen, Request
+from urllib.request import build_opener, HTTPCookieProcessor, Request
+from http.cookiejar import CookieJar
 
 URL = "https://www.nfe.fazenda.gov.br/portal/infoEstatisticas.aspx"
 ROOT = Path(__file__).resolve().parent / "docs/api"
@@ -75,9 +76,10 @@ def publish(history):
 
 def main():
     ROOT.mkdir(parents=True, exist_ok=True)
+    opener = build_opener(HTTPCookieProcessor(CookieJar()))
     for attempt in range(3):
         try:
-            with urlopen(Request(URL, headers={"User-Agent":"DFE-Statistics-BR/1.0 (+https://github.com/fraurino/DFE-Statistics-BR)"}), timeout=40) as response:
+            with opener.open(Request(URL, headers={"User-Agent":"DFE-Statistics-BR/1.0 (+https://github.com/fraurino/DFE-Statistics-BR)"}), timeout=40) as response:
                 result=parse(response.read().decode(response.headers.get_content_charset() or "utf-8"))
             break
         except Exception:
