@@ -1,0 +1,15 @@
+{
+  "nfe": {
+    "data": "2026-11-26",
+    "valor": 63405000000,
+    "publicado": "63,405 bilhões",
+    "variacao": null
+  },
+  "emissores": {
+    "data": "2026-11-22",
+    "valor": 2930000,
+    "publicado": "2,93 milhões"
+  },
+  "fonte": "https://www.nfe.fazenda.gov.br/portal/infoEstatisticas.aspx",
+  "aproximado": true
+}
