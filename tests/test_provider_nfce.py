@@ -7,3 +7,6 @@ class TestProvider(unittest.TestCase):
     def test_invalid(self):
         with self.assertRaises(ValueError):
             parse_csv(b"<html>error</html>")
+    def test_english(self):
+        raw = 'Month of Mês,Year of Mês,Mês,Max. Mês,Sum of Emissores  (CNPJ)\nSeptember,2026,9/1/2026,9/1/2026,"2,668,491"\n'.encode()
+        self.assertEqual(parse_csv(raw)["2026-09-01"]["valor"], 2668491)

@@ -15,19 +15,31 @@ def parse_csv(raw):
     delimiter = ";" if first.count(";") > first.count(",") else ","
     reader = csv.DictReader(io.StringIO(decoded), delimiter=delimiter)
     fields = {" ".join(x.split()): x for x in reader.fieldnames or []}
-    metric = "Soma de Emissores (CNPJ)"
+    metric = next((k for k in ("Soma de Emissores (CNPJ)", "Sum of Emissores (CNPJ)") if k in fields), "")
+    english = metric.startswith("Sum")
     if not {"Mês", metric}.issubset(fields):
         raise ValueError("Unexpected provider schema")
     rows = {}
     for row in reader:
-        date = datetime.strptime(row[fields["Mês"]].strip(), "%d/%m/%Y").date()
+        date_text = row[fields["Mês"]].strip()
+        date = None
+        for pattern in (["%m/%d/%Y", "%Y-%m-%d", "%d/%m/%Y"] if english else ["%d/%m/%Y", "%Y-%m-%d", "%m/%d/%Y"]):
+            try:
+                candidate = datetime.strptime(date_text, pattern).date()
+                if candidate.day == 1:
+                    date = candidate
+                    break
+            except ValueError:
+                pass
+        if date is None:
+            raise ValueError("Invalid monthly date")
         value = row[fields[metric]].strip()
-        if date.day != 1 or not re.fullmatch(r"(?:[0-9]+|[0-9]{1,3}(?:\.[0-9]{3})+)", value):
+        if not re.fullmatch(r"(?:[0-9]+|[0-9]{1,3}(?:[.,][0-9]{3})+)", value):
             raise ValueError("Invalid observation")
         key = date.isoformat()
         if key in rows:
             raise ValueError("Duplicate observation")
-        rows[key] = dict(data=key, valor=int(value.replace(".", "")), publicado=value)
+        rows[key] = dict(data=key, valor=int(value.replace(".", "").replace(",", "")), publicado=value)
     if not rows:
         raise ValueError("Empty provider series")
     return rows
@@ -47,7 +59,7 @@ def main():
     rows = None
     with requests.Session() as session:
         session.headers.update(headers)
-        for query in ("?:showVizHome=no&:format=csv", "?:showVizHome=no&:display_count=n&:origin=viz_share_link", "?:showVizHome=no", "?:showVizHome=n", "?:refresh=yes", ""):
+        for query in ("?:showVizHome=no", "?:showVizHome=n", "?:showVizHome=no&:display_count=n&:origin=viz_share_link", "?:refresh=yes", ""):
             try:
                 with session.get(URL + query, timeout=(10, 25), stream=True, allow_redirects=True) as response:
                     response.raise_for_status()
