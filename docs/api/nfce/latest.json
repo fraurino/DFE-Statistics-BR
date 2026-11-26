@@ -1,0 +1,12 @@
+{
+  "documento": null,
+  "emissores": {
+    "data": "2026-09-01",
+    "valor": 2668491,
+    "publicado": "2.668.491"
+  },
+  "fonte": "https://public.tableau.com/views/EstatsticasNFCe/NFCe.csv",
+  "metrica": "emissores",
+  "abrangencia": "não confirmada",
+  "periodicidade": "mensal"
+}

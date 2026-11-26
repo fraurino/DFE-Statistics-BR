@@ -1,1 +1,1 @@
-{"status": "failure", "consulta": "2026-11-26T17:23:59.471815+00:00", "inicio": "2026-11-26T17:23:55.150056+00:00", "proxima_consulta": "2026-11-27T12:17:00+00:00", "duracao_segundos": 4.32, "ultima_consulta_sucesso": null}
+{"status": "success", "consulta": "2026-11-26T17:27:24.983817+00:00", "inicio": "2026-11-26T17:27:23.566595+00:00", "proxima_consulta": "2026-12-07T12:17:00+00:00", "duracao_segundos": 1.42, "ultima_consulta_sucesso": "2026-11-26T17:27:24.983817+00:00"}
